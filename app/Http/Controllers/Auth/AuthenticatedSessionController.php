@@ -21,8 +21,6 @@ class AuthenticatedSessionController extends Controller
         try {
             $request->authenticate();
 
-            $request->session()->regenerate();
-
             $user = User::where('email', $request->email)->first();
 
             // Revoke previous tokens if you want one active token at a time
@@ -33,7 +31,10 @@ class AuthenticatedSessionController extends Controller
 
             return response()->json([
                 'message' => 'Login successful',
-                'user' => $user,
+                'user' => [
+                    'name' => $user->name,
+                    'email' => $user->email
+                ],
                 'token' => $token
             ]);
         } catch (\Throwable $th) {
@@ -51,11 +52,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        Auth::guard('web')->logout();
+        $user = $request->user();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        if ($user) {
+            $user->currentAccessToken()->delete();
+        }
 
         return response()->noContent();
     }
