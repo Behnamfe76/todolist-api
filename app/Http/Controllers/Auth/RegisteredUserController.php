@@ -20,35 +20,26 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        try {
-            $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            ]);
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->string('password')),
-            ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->string('password')),
+        ]);
 
-            event(new Registered($user));
+        event(new Registered($user));
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'message' => 'User registered successfully',
-                'user' => $user,
-                'token' => $token,
-            ], 201);
-        } catch (\Throwable $th) {
-            Log::error($th->getMessage());
-
-            return response()->json([
-                'message' => 'User registration failed',
-                'error' => 'server error',
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'User registered successfully',
+            'user' => $user,
+            'token' => $token,
+        ], 201);
     }
 }
