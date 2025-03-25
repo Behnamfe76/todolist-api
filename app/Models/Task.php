@@ -14,7 +14,7 @@ class Task extends Model
 {
     protected $table = 'tasks';
 
-    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'type', 'status', 'priority'];
+    protected $fillable = ['uuid', 'user_id', 'title', 'description', 'type', 'status', 'priority', 'date'];
 
     /**
      * @return BelongsTo

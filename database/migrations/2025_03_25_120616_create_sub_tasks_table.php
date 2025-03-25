@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('status');
             $table->string('priority');
+            $table->timestamp('date');
             $table->timestamps();
         });
     }
