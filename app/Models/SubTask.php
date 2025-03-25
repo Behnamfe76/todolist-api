@@ -12,7 +12,7 @@ class SubTask extends Model
 {
     protected $table = 'sub_tasks';
 
-    protected $fillable = ['uuid', 'user_id', 'task_id', 'title', 'description', 'type', 'status', 'priority', 'date'];
+    protected $fillable = ['uuid', 'user_id', 'task_id', 'title', 'description', 'type', 'status', 'priority'];
 
 
     /**

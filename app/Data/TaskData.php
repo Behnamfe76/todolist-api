@@ -8,6 +8,7 @@ use App\Enums\TaskTypeEnum;
 use App\Http\Requests\V1\TaskStoreRequest;
 use App\Models\Task;
 use Illuminate\Support\Str;
+use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
@@ -30,8 +31,8 @@ class TaskData extends Data
         #[Nullable, StringType]
         public ?string $description,
 
-        #[Required, Date]
-        public string $date,
+        #[Nullable, BooleanType]
+        public ?bool $is_completed,
 
         #[Required, In(['internal', 'external'])]
         public TaskStatusEnum $status,
@@ -41,6 +42,12 @@ class TaskData extends Data
 
         #[Required, In(['low', 'medium', 'high', 'urgent'])]
         public TaskPriorityEnum $priority,
+
+        #[Required, Date]
+        public string $due_date,
+
+        #[Nullable, Date]
+        public ?string $done_date,
     ) {}
 
     /**
@@ -54,10 +61,12 @@ class TaskData extends Data
             uuid: $task->uuid,
             title: $task->title,
             description: $task->description,
-            date: $task->date,
+            is_completed: $task->is_completed,
             status: $task->status,
             type: $task->type,
             priority: $task->priority,
+            due_date: $task->due_date,
+            done_date: $task->done_date,
         );
     }
 
@@ -72,10 +81,12 @@ class TaskData extends Data
             uuid: Str::uuid()->toString(),
             title: $request->get('title'),
             description: $request->get('description'),
-            date: $request->get('date'),
+            is_completed: false,
             status: TaskStatusEnum::from($request->get('status')),
             type: TaskTypeEnum::from($request->get('type')),
             priority: TaskPriorityEnum::from($request->get('priority')),
+            due_date: $request->get('date'),
+            done_date: null,
         );
     }
 }

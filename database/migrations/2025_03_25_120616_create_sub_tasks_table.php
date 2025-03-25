@@ -18,10 +18,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
+            $table->boolean('is_completed')->default(false);
             $table->string('type');
             $table->string('status');
             $table->string('priority');
-            $table->timestamp('date');
             $table->timestamps();
         });
     }
