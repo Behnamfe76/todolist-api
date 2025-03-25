@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\TaskRepositoryContracts;
+use App\Contracts\TaskServiceContracts;
+use App\Repositories\TaskRepository;
+use App\Services\TaskService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(TaskServiceContracts::class, TaskService::class);
+        $this->app->bind(TaskRepositoryContracts::class, TaskRepository::class);
     }
 
     /**
