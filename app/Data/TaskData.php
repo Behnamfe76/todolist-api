@@ -8,6 +8,7 @@ use App\Enums\TaskTypeEnum;
 use App\Http\Requests\V1\TaskStoreRequest;
 use App\Models\Task;
 use Illuminate\Support\Str;
+use Spatie\LaravelData\Attributes\Validation\Date;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
@@ -28,6 +29,9 @@ class TaskData extends Data
 
         #[Nullable, StringType]
         public ?string $description,
+
+        #[Required, Date]
+        public string $date,
 
         #[Required, In(['internal', 'external'])]
         public TaskStatusEnum $status,
@@ -50,6 +54,7 @@ class TaskData extends Data
             uuid: $task->uuid,
             title: $task->title,
             description: $task->description,
+            date: $task->date,
             status: $task->status,
             type: $task->type,
             priority: $task->priority,
@@ -67,6 +72,7 @@ class TaskData extends Data
             uuid: Str::uuid()->toString(),
             title: $request->get('title'),
             description: $request->get('description'),
+            date: $request->get('date'),
             status: TaskStatusEnum::from($request->get('status')),
             type: TaskTypeEnum::from($request->get('type')),
             priority: TaskPriorityEnum::from($request->get('priority')),
