@@ -28,6 +28,7 @@ class TaskStoreRequest extends FormRequest
         return [
             'title' => 'string|required|max:255',
             'description' => 'string|nullable|max:10240',
+            'date' => 'required|date',
             'type' => ['required', Rule::enum(TaskTypeEnum::class)],
             'status' => ['required', Rule::enum(TaskStatusEnum::class)],
             'priority' => ['required', Rule::enum(TaskPriorityEnum::class)],
