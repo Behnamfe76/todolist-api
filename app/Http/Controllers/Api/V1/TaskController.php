@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Requests\V1\TaskStatusUpdateRequest;
 use App\Models\Task;
 use App\Data\TaskData;
 use App\Traits\ApiResponse;
@@ -79,6 +80,22 @@ class TaskController extends Controller
         }
 
         return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task type updated successfully', 200);
+    }
+
+    /**
+     * @param TaskStatusUpdateRequest $request
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function updateStatus(TaskStatusUpdateRequest $request, Task $task): JsonResponse
+    {
+        $result = $this->taskService->updateStatus($request, $task);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task status updated successfully', 200);
     }
 
 }
