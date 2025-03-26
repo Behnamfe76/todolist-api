@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\V1\TaskPriorityUpdateRequest;
 use App\Http\Requests\V1\TaskStatusUpdateRequest;
+use App\Http\Requests\V1\TaskUpdateRequest;
 use App\Models\Task;
 use App\Data\TaskData;
 use App\Traits\ApiResponse;
@@ -113,6 +114,22 @@ class TaskController extends Controller
         }
 
         return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task priority updated successfully', 200);
+    }
+
+    /**
+     * @param TaskUpdateRequest $request
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function updateInfo(TaskUpdateRequest $request, Task $task): JsonResponse
+    {
+        $result = $this->taskService->updateInfo($request, $task);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task info updated successfully', 200);
     }
 
 }
