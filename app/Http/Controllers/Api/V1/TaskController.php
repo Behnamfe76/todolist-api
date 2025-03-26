@@ -22,6 +22,22 @@ class TaskController extends Controller
         private readonly TaskServiceContracts $taskService
     ){}
 
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $result = $this->taskService->index($request);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse($result, 'all available tasks', 200);
+    }
+
     /**
      * @param TaskStoreRequest $request
      * @return JsonResponse
