@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\TaskRepositoryContracts;
 use App\Contracts\TaskServiceContracts;
 use App\Data\TaskData;
+use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
 use App\Enums\TaskTypeEnum;
 use Exception;
@@ -87,6 +88,26 @@ class TaskService implements TaskServiceContracts{
             ];
 
             return $task->update($conditions);
+        } catch (Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+    /**
+     * @param $request
+     * @param $task
+     * @return Throwable|Exception|bool
+     */
+    public function updatePriority($request, $task): Throwable|Exception|bool
+    {
+        try {
+            $priority = TaskPriorityEnum::from($request->get('priority'));
+
+            return $task->update([
+                'priority' => $priority
+            ]);
         } catch (Throwable $tr) {
             Log::error($tr->getMessage());
 
