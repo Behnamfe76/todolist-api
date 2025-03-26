@@ -27,7 +27,7 @@ class Task extends Model
     /**
      * @return HasMany
      */
-    public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function subTasks(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SubTask::class);
     }
