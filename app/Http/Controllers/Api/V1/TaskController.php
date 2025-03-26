@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Contracts\TaskServiceContracts;
+use App\Models\Task;
 use App\Data\TaskData;
-use App\Http\Requests\V1\TaskStoreRequest;
 use App\Traits\ApiResponse;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Contracts\TaskServiceContracts;
+use App\Http\Resources\V1\TaskResource;
+use Illuminate\Container\Attributes\Auth;
+use App\Http\Requests\V1\TaskStoreRequest;
+use App\Http\Requests\V1\TaskTypeUpdateRequest;
 
 class TaskController extends Controller
 {
@@ -52,4 +55,30 @@ class TaskController extends Controller
 
         return $this->successResponse($result, 'task created successfully', 201);
     }
+
+    /**
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function show(Task $task): JsonResponse
+    {
+        return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task found successfully', 200);
+    }
+
+    /**
+     * @param TaskTypeUpdateRequest $request
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function updateType(TaskTypeUpdateRequest $request, Task $task): JsonResponse
+    {
+        $result = $this->taskService->updateType($request, $task);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task type updated successfully', 200);
+    }
+
 }
