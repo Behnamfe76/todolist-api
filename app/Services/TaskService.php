@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\TaskRepositoryContracts;
 use App\Contracts\TaskServiceContracts;
 use App\Data\TaskData;
+use App\Enums\TaskTypeEnum;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,6 @@ class TaskService implements TaskServiceContracts{
     public function __construct(
         private readonly  TaskRepositoryContracts $taskRepository,
     ){}
-
 
     /**
      * @param $request
@@ -43,6 +43,26 @@ class TaskService implements TaskServiceContracts{
 
             return TaskData::fromModel($task);
         }catch (Throwable $tr){
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+    /**
+     * @param $request
+     * @param $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateType($request, $task): Throwable|Exception|bool
+    {
+        try {
+            $type = TaskTypeEnum::from($request->get('type'));
+
+            return $task->update([
+                'type' => $type
+            ]);
+        } catch (Throwable $tr) {
             Log::error($tr->getMessage());
 
             return $tr;

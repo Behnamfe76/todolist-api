@@ -3,11 +3,13 @@
 namespace App\Contracts;
 
 use Exception;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Throwable;
+use App\Models\Task;
 use App\Data\TaskData;
 use Illuminate\Http\Request;
 use App\Http\Requests\V1\TaskStoreRequest;
+use App\Http\Requests\V1\TaskTypeUpdateRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface TaskServiceContracts{
 
@@ -22,4 +24,11 @@ interface TaskServiceContracts{
      * @return TaskData|Throwable|Exception
      */
     public function store(TaskStoreRequest $request): TaskData|Throwable|Exception;
+
+    /**
+     * @param TaskTypeUpdateRequest $request
+     * @param Task $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateType(TaskTypeUpdateRequest $request, Task $task): Throwable|Exception|bool;
 }
