@@ -4,6 +4,7 @@ namespace App\Contracts;
 
 use App\Http\Requests\V1\TaskPriorityUpdateRequest;
 use App\Http\Requests\V1\TaskStatusUpdateRequest;
+use App\Http\Requests\V1\TaskUpdateRequest;
 use Exception;
 use Throwable;
 use App\Models\Task;
@@ -47,4 +48,11 @@ interface TaskServiceContracts{
      * @return Throwable|Exception|bool
      */
     public function updatePriority(TaskPriorityUpdateRequest $request, Task $task): Throwable|Exception|bool;
+
+    /**
+     * @param TaskUpdateRequest $request
+     * @param Task $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateInfo(TaskUpdateRequest $request, Task $task): Throwable|Exception|bool;
 }

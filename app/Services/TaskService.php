@@ -114,4 +114,24 @@ class TaskService implements TaskServiceContracts{
             return $tr;
         }
     }
+
+    /**
+     * @param $request
+     * @param $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateInfo($request, $task): Throwable|Exception|bool
+    {
+        try {
+            return $task->update([
+                "title" => $request->get('title'),
+                "description" => $request->get('description'),
+                "due_date" => $request->get('date'),
+            ]);
+        } catch (Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
 }
