@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\TaskRepositoryContracts;
 use App\Contracts\TaskServiceContracts;
 use App\Data\TaskData;
+use App\Enums\TaskStatusEnum;
 use App\Enums\TaskTypeEnum;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -62,6 +63,30 @@ class TaskService implements TaskServiceContracts{
             return $task->update([
                 'type' => $type
             ]);
+        } catch (Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+    /**
+     * @param $request
+     * @param $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateStatus($request, $task): Throwable|Exception|bool
+    {
+        try {
+            $status = TaskStatusEnum::from($request->get('status'));
+
+            $conditions = [
+                'status' => $status,
+                'is_completed' => in_array($status, [TaskStatusEnum::DONE, TaskStatusEnum::EXPIRED]),
+                'done_date' => in_array($status, [TaskStatusEnum::DONE, TaskStatusEnum::EXPIRED]) ? now() : null,
+            ];
+
+            return $task->update($conditions);
         } catch (Throwable $tr) {
             Log::error($tr->getMessage());
 

@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Http\Requests\V1\TaskStatusUpdateRequest;
 use Exception;
 use Throwable;
 use App\Models\Task;
@@ -31,4 +32,11 @@ interface TaskServiceContracts{
      * @return Throwable|Exception|bool
      */
     public function updateType(TaskTypeUpdateRequest $request, Task $task): Throwable|Exception|bool;
+
+    /**
+     * @param TaskStatusUpdateRequest $request
+     * @param Task $task
+     * @return Throwable|Exception|bool
+     */
+    public function updateStatus(TaskStatusUpdateRequest $request, Task $task): Throwable|Exception|bool;
 }
