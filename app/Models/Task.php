@@ -42,7 +42,8 @@ class Task extends Model
         return [
             'status' => TaskStatusEnum::class,
             'type' => TaskTypeEnum::class,
-            'priority' => TaskPriorityEnum::class
+            'priority' => TaskPriorityEnum::class,
+            'is_completed' => 'bool'
         ];
     }
 }
