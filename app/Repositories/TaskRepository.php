@@ -27,7 +27,7 @@ class TaskRepository implements TaskRepositoryContracts
                         $query->where('is_completed', true);
                     }
                 ])
-                ->paginate(10);
+                ->paginate(9);
         } catch (\Throwable $tr) {
             Log::error($tr->getMessage());
 
