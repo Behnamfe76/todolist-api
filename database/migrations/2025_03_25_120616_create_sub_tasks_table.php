@@ -16,12 +16,8 @@ return new class extends Migration
             $table->uuid('uuid')->unique();
             $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('title');
-            $table->text('description')->nullable();
+            $table->text('text')->nullable();
             $table->boolean('is_completed')->default(false);
-            $table->string('type');
-            $table->string('status');
-            $table->string('priority');
             $table->timestamps();
         });
     }

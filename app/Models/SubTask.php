@@ -12,7 +12,7 @@ class SubTask extends Model
 {
     protected $table = 'sub_tasks';
 
-    protected $fillable = ['uuid', 'user_id', 'task_id', 'title', 'description', 'type', 'status', 'priority'];
+    protected $fillable = ['uuid', 'user_id', 'task_id', 'text'];
 
 
     /**
@@ -29,17 +29,5 @@ class SubTask extends Model
     public function task(): BelongsTo
     {
         return $this->belongsTo(Task::class);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function casts(): array
-    {
-        return [
-            'status' => TaskStatusEnum::class,
-            'type' => TaskTypeEnum::class,
-            'priority' => TaskPriorityEnum::class
-        ];
     }
 }
