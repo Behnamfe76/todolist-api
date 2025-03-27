@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\V1\TaskPriorityUpdateRequest;
-use App\Http\Requests\V1\TaskStatusUpdateRequest;
-use App\Http\Requests\V1\TaskUpdateRequest;
+use App\Models\SubTask;
 use App\Models\Task;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,7 +11,11 @@ use App\Http\Controllers\Controller;
 use App\Contracts\TaskServiceContracts;
 use App\Http\Resources\V1\TaskResource;
 use App\Http\Requests\V1\TaskStoreRequest;
+use App\Http\Requests\V1\TaskUpdateRequest;
+use App\Http\Requests\V1\SubTaskStoreRequest;
 use App\Http\Requests\V1\TaskTypeUpdateRequest;
+use App\Http\Requests\V1\TaskStatusUpdateRequest;
+use App\Http\Requests\V1\TaskPriorityUpdateRequest;
 
 class TaskController extends Controller
 {
@@ -141,4 +143,63 @@ class TaskController extends Controller
         return $this->successResponse([], 'task deleted successfully', 200);
     }
 
+
+    /**
+     * @param SubTaskStoreRequest $request
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function storeSubTask(SubTaskStoreRequest $request, Task $task): \Illuminate\Http\JsonResponse
+    {
+
+        $result = $this->taskService->storeSubTask($request, $task);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse($result, 'sub task created successfully', 201);
+    }
+
+    /**
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function getSubTasks(Task $task): JsonResponse
+    {
+        $result = $this->taskService->getSubTasks($task);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse($result, 'all available tasks', 200);
+    }
+
+    /**
+     * @param SubTask $subTask
+     * @return JsonResponse
+     */
+    public function changeSubTaskStatus(SubTask $subTask): JsonResponse
+    {
+
+        $result = $this->taskService->changeSubTaskStatus($subTask);
+
+        if ($result instanceof \Throwable) {
+            return $this->errorResponse('server error', 500);
+        }
+
+        return $this->successResponse([], 'sub-task status changed successfully', 200);
+    }
+
+    /**
+     * @param SubTask $subTask
+     * @return JsonResponse
+     */
+    public function deleteSubTask(SubTask $subTask): JsonResponse
+    {
+        $subTask->delete();
+
+        return $this->successResponse([], 'sub task deleted successfully', 200);
+    }
 }
