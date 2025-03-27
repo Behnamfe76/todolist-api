@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\TaskController;
 
 
-Route::prefix('/tasks')->middleware('auth:sanctum')->group(function () {
+Route::prefix('/v1/tasks')->middleware('auth:sanctum')->group(function () {
     Route::post('/', [TaskController::class, 'store']);
     Route::get('/', [TaskController::class, 'index']);
     Route::get('/{task:uuid}', [TaskController::class, 'show']);
