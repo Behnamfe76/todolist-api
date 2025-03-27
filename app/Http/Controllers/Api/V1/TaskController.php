@@ -6,14 +6,12 @@ use App\Http\Requests\V1\TaskPriorityUpdateRequest;
 use App\Http\Requests\V1\TaskStatusUpdateRequest;
 use App\Http\Requests\V1\TaskUpdateRequest;
 use App\Models\Task;
-use App\Data\TaskData;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Contracts\TaskServiceContracts;
 use App\Http\Resources\V1\TaskResource;
-use Illuminate\Container\Attributes\Auth;
 use App\Http\Requests\V1\TaskStoreRequest;
 use App\Http\Requests\V1\TaskTypeUpdateRequest;
 
@@ -130,6 +128,17 @@ class TaskController extends Controller
         }
 
         return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task info updated successfully', 200);
+    }
+
+    /**
+     * @param Task $task
+     * @return JsonResponse
+     */
+    public function deleteTask(Task $task): JsonResponse
+    {
+        $task->delete();
+
+        return $this->successResponse([], 'task deleted successfully', 200);
     }
 
 }

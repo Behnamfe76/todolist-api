@@ -5,11 +5,12 @@ use App\Http\Controllers\Api\V1\TaskController;
 
 
 Route::prefix('/tasks')->middleware('auth:sanctum')->group(function () {
+    Route::post('/', [TaskController::class, 'store']);
     Route::get('/', [TaskController::class, 'index']);
     Route::get('/{task:uuid}', [TaskController::class, 'show']);
+    Route::delete('/{task:uuid}', [TaskController::class, 'deleteTask']);
     Route::patch('/{task:uuid}/update-type', [TaskController::class, 'updateType']);
     Route::patch('/{task:uuid}/update-status', [TaskController::class, 'updateStatus']);
     Route::patch('/{task:uuid}/update-priority', [TaskController::class, 'updatePriority']);
     Route::patch('/{task:uuid}/update-info', [TaskController::class, 'updateInfo']);
-    Route::post('/', [TaskController::class, 'store']);
 });
