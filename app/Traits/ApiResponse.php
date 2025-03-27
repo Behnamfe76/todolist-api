@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Collection;
 use Spatie\LaravelData\Data;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -11,12 +12,12 @@ trait ApiResponse
 {
 
     /**
-     * @param array|Data|LengthAwarePaginator|JsonResource $data
+     * @param array|Data|LengthAwarePaginator|JsonResource|Collection $data
      * @param string $message
      * @param int $code
      * @return JsonResponse
      */
-    public function successResponse(array|Data|LengthAwarePaginator|JsonResource $data, string $message, int $code): \Illuminate\Http\JsonResponse
+    public function successResponse(array|Data|LengthAwarePaginator|JsonResource|Collection $data, string $message, int $code): \Illuminate\Http\JsonResponse
     {
         return response()->json([
             'status' => 'success',
