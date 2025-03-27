@@ -23,44 +23,6 @@ class TaskRepository implements TaskRepositoryContracts
         try {
             $user = $request->user();
 
-            Log::info(
-                Task::when($request->has('query'), function ($query) use ($request) {
-                    $input = $request->get('query');
-                    if ($input) {
-                        $query->where(function ($q) use ($input) {
-                            $q->where('title', 'LIKE', "%$input%")
-                                ->orWhere('description', 'LIKE', "%$input%");
-                        });
-                    }
-                })
-                    ->when($request->has('status'), function ($query) use ($request) {
-                        $input = $request->get('status');
-                        $status = TaskStatusEnum::tryFrom($input);
-                        if ($status) {
-                            $query->where('status', $status);
-                        }
-                    })
-                    ->when($request->has('completed'), function ($query) use ($request) {
-                        $input = match ($request->get('completed')) {
-                            'completed' => true,
-                            'not_completed' => false,
-                            default => 'all'
-                        };
-                        if ($input !== 'all') {
-                            $query->where('is_completed', $input);
-                        }
-                    })
-                    ->select('id', 'uuid', 'user_id', 'title', 'description', 'is_completed', 'status', 'due_date')
-                    ->where('user_id', $user->id)
-                    ->withCount([
-                        'subTasks as sub_tasks',
-                        'subTasks as completed_sub_tasks' => function ($query) {
-                            $query->where('is_completed', true);
-                        }
-                    ])->toSql()
-
-            );
-
             return Task::when($request->has('query'), function ($query) use ($request) {
                 $input = $request->get('query');
                 if ($input) {
