@@ -57,7 +57,9 @@ class TaskRepository implements TaskRepositoryContracts
                     'subTasks as completed_sub_tasks' => function ($query) {
                         $query->where('is_completed', true);
                     }
-                ])->paginate(9);
+                ])
+                ->orderBy('due_date')
+                ->paginate(9);
         } catch (\Throwable $tr) {
             Log::error($tr->getMessage());
 
