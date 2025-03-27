@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-use App\Enums\TaskPriorityEnum;
-use App\Enums\TaskStatusEnum;
 use App\Enums\TaskTypeEnum;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Enums\TaskStatusEnum;
+use App\Enums\TaskPriorityEnum;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Task extends Model
 {
+    use HasFactory;
     protected $table = 'tasks';
 
     protected $fillable = ['uuid', 'user_id', 'title', 'description', 'type', 'status', 'priority', 'due_date', 'done_date', 'is_completed'];
