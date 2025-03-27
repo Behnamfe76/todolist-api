@@ -4,14 +4,15 @@ namespace App\Services;
 
 use App\Contracts\TaskRepositoryContracts;
 use App\Contracts\TaskServiceContracts;
+use App\Data\SubTaskData;
 use App\Data\TaskData;
 use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
 use App\Enums\TaskTypeEnum;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 
 class TaskService implements TaskServiceContracts{
@@ -45,6 +46,20 @@ class TaskService implements TaskServiceContracts{
 
             return TaskData::fromModel($task);
         }catch (Throwable $tr){
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+
+    public function storeSubTask($request, $task): SubTaskData|Throwable|Exception
+    {
+        try {
+            $subTask = $this->taskRepository->storeSubTask(SubTaskData::fromRequest($request, $task));
+
+            return SubTaskData::fromModel($subTask);
+        } catch (Throwable $tr) {
             Log::error($tr->getMessage());
 
             return $tr;
@@ -129,6 +144,43 @@ class TaskService implements TaskServiceContracts{
                 "due_date" => $request->get('date'),
             ]);
         } catch (Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+    /**
+     * @param $task
+     * @return Collection|Throwable|Exception
+     */
+    public function getSubTasks($task): Collection|Throwable|Exception
+    {
+        try {
+            return $task->subTasks()
+                ->select('uuid', 'text', 'is_completed')
+                ->orderByDesc('created_by')
+                ->get();
+        } catch (\Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+
+    /**
+     * @param $subTask
+     * @return Throwable|Exception|bool
+     */
+    public function changeSubTaskStatus($subTask): Throwable|Exception|bool
+    {
+        try {
+            return $subTask->update([
+                'is_completed' => !$subTask->is_completed,
+            ]);
+
+        } catch (\Throwable $tr) {
             Log::error($tr->getMessage());
 
             return $tr;
