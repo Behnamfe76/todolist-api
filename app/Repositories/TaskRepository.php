@@ -19,7 +19,12 @@ class TaskRepository implements TaskRepositoryContracts
     {
         try {
             $user = $request->user();
-            return Task::select('uuid', 'title', 'description', 'is_completed', 'status', 'due_date')
+            return Task::when($request->has('query'), function($query) use ($request) {
+                $input = $request->get('query');
+                $query->whereLike('title', "%$input%")
+                    ->orWhereLike('description', "%$input%");
+            })
+            ->select('uuid', 'title', 'description', 'is_completed', 'status', 'due_date')
                 ->where('user_id', $user->id)
                 ->withCount([
                     'subTasks as sub_tasks',
