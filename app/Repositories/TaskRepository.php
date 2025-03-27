@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\TaskRepositoryContracts;
 use App\Enums\TaskStatusEnum;
+use App\Models\SubTask;
 use App\Models\Task;
 use Exception;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -75,6 +76,21 @@ class TaskRepository implements TaskRepositoryContracts
     {
         try {
             return Task::create($data->toArray());
+        } catch (Throwable $tr) {
+            Log::error($tr->getMessage());
+
+            return $tr;
+        }
+    }
+
+    /**
+     * @param $data
+     * @return SubTask|Throwable|Exception
+     */
+    public function storeSubTask($data): SubTask|Throwable|Exception
+    {
+        try {
+            return SubTask::create($data->toArray());
         } catch (Throwable $tr) {
             Log::error($tr->getMessage());
 
