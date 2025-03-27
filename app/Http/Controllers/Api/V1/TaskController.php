@@ -65,6 +65,11 @@ class TaskController extends Controller
      */
     public function show(Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         return $this->successResponse(new TaskResource($task->load(['user', 'subTasks'])), 'task found successfully', 200);
     }
 
@@ -75,6 +80,11 @@ class TaskController extends Controller
      */
     public function updateType(TaskTypeUpdateRequest $request, Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $result = $this->taskService->updateType($request, $task);
 
         if ($result instanceof \Throwable) {
@@ -91,6 +101,11 @@ class TaskController extends Controller
      */
     public function updateStatus(TaskStatusUpdateRequest $request, Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $result = $this->taskService->updateStatus($request, $task);
 
         if ($result instanceof \Throwable) {
@@ -107,6 +122,11 @@ class TaskController extends Controller
      */
     public function updatePriority(TaskPriorityUpdateRequest $request, Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $result = $this->taskService->updatePriority($request, $task);
 
         if ($result instanceof \Throwable) {
@@ -123,6 +143,11 @@ class TaskController extends Controller
      */
     public function updateInfo(TaskUpdateRequest $request, Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $result = $this->taskService->updateInfo($request, $task);
 
         if ($result instanceof \Throwable) {
@@ -138,6 +163,11 @@ class TaskController extends Controller
      */
     public function deleteTask(Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $task->delete();
 
         return $this->successResponse([], 'task deleted successfully', 200);
@@ -151,6 +181,10 @@ class TaskController extends Controller
      */
     public function storeSubTask(SubTaskStoreRequest $request, Task $task): \Illuminate\Http\JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
 
         $result = $this->taskService->storeSubTask($request, $task);
 
@@ -167,6 +201,11 @@ class TaskController extends Controller
      */
     public function getSubTasks(Task $task): JsonResponse
     {
+        // Check if the task belongs to the authenticated user
+        if ($task->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $result = $this->taskService->getSubTasks($task);
 
         if ($result instanceof \Throwable) {
@@ -182,6 +221,10 @@ class TaskController extends Controller
      */
     public function changeSubTaskStatus(SubTask $subTask): JsonResponse
     {
+        // Check if the subtask belongs to the authenticated user
+        if ($subTask->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
 
         $result = $this->taskService->changeSubTaskStatus($subTask);
 
@@ -198,6 +241,11 @@ class TaskController extends Controller
      */
     public function deleteSubTask(SubTask $subTask): JsonResponse
     {
+        // Check if the subtask belongs to the authenticated user
+        if ($subTask->user_id !== auth()->id()) {
+            return $this->errorResponse('Unauthorized access', 403);
+        }
+
         $subTask->delete();
 
         return $this->successResponse([], 'sub task deleted successfully', 200);
