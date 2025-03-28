@@ -2,15 +2,15 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\Task;
-use App\Models\SubTask;
 use Tests\TestCase;
+use App\Models\Task;
+use App\Models\User;
+use App\Models\SubTask;
 use App\Enums\TaskTypeEnum;
+use Laravel\Sanctum\Sanctum;
 use App\Enums\TaskStatusEnum;
 use App\Enums\TaskPriorityEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 
 class TaskControllerTest extends TestCase
 {
@@ -24,6 +24,7 @@ class TaskControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
 
         // Create test users
         $this->user = User::factory()->create();
@@ -81,9 +82,9 @@ class TaskControllerTest extends TestCase
         $taskData = [
             'title' => 'New Task',
             'description' => 'New Description',
-            'type' => 'todo',
-            'status' => 'internal',
-            'priority' => 'medium',
+            'type' => TaskTypeEnum::INTERNAL,
+            'status' => TaskStatusEnum::TODO,
+            'priority' => TaskPriorityEnum::HIGH,
             'date' => now()->addDays(5)->format('Y-m-d'),
         ];
 
@@ -121,13 +122,13 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/types", [
-            'type' => 'on_progress'
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-type", [
+            'type' => TaskTypeEnum::INTERNAL
         ]);
 
         $response->assertStatus(200);
         $this->task->refresh();
-        $this->assertEquals(TaskStatusEnum::ON_PROGRESS, $this->task->type);
+        $this->assertEquals(TaskTypeEnum::INTERNAL, $this->task->type);
     }
 
     /** @test */
@@ -135,8 +136,8 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/types", [
-            'type' => 'on_progress'
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-type", [
+            'type' => TaskTypeEnum::INTERNAL
         ]);
 
         $response->assertStatus(403);
@@ -147,13 +148,13 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/statuses", [
-            'status' => 'external'
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-status", [
+            'status' => TaskStatusEnum::EXPIRED
         ]);
 
         $response->assertStatus(200);
         $this->task->refresh();
-        $this->assertEquals(TaskTypeEnum::EXTERNAL, $this->task->status);
+        $this->assertEquals(TaskStatusEnum::EXPIRED, $this->task->status);
     }
 
     /** @test */
@@ -161,8 +162,8 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/statuses", [
-            'status' => 'external'
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-status", [
+            'status' => 'done'
         ]);
 
         $response->assertStatus(403);
@@ -173,7 +174,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/priorities", [
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-priority", [
             'priority' => 'high'
         ]);
 
@@ -187,7 +188,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/priorities", [
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-priority", [
             'priority' => 'high'
         ]);
 
@@ -199,7 +200,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/info", [
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-info", [
             'title' => 'Updated Title',
             'description' => 'Updated Description',
             'date' => now()->addDays(10)->format('Y-m-d')
@@ -216,7 +217,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/info", [
+        $response = $this->patchJson("/api/v1/tasks/{$this->task->uuid}/update-info", [
             'title' => 'Updated Title',
             'description' => 'Updated Description',
             'date' => now()->addDays(10)->format('Y-m-d')
@@ -256,7 +257,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->postJson("/api/v1/tasks/{$this->task->uuid}/sub-tasks", [
+        $response = $this->postJson("/api/v1/tasks/sub-tasks/{$this->task->uuid}", [
             'text' => 'New Subtask'
         ]);
 
@@ -274,7 +275,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->postJson("/api/v1/tasks/{$this->task->uuid}/sub-tasks", [
+        $response = $this->postJson("/api/v1/tasks/sub-tasks/{$this->task->uuid}", [
             'text' => 'New Subtask'
         ]);
 
@@ -286,7 +287,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->getJson("/api/v1/tasks/{$this->task->uuid}/sub-tasks");
+        $response = $this->getJson("/api/v1/tasks/sub-tasks/{$this->task->uuid}");
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -301,7 +302,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->getJson("/api/v1/tasks/{$this->task->uuid}/sub-tasks");
+        $response = $this->getJson("/api/v1/tasks/sub-tasks/{$this->task->uuid}");
 
         $response->assertStatus(403);
     }
@@ -313,7 +314,7 @@ class TaskControllerTest extends TestCase
 
         $initialStatus = $this->subTask->is_completed;
 
-        $response = $this->patchJson("/api/v1/sub-tasks/{$this->subTask->uuid}/change-status");
+        $response = $this->patchJson("/api/v1/tasks/sub-tasks/{$this->subTask->uuid}");
 
         $response->assertStatus(200);
 
@@ -326,7 +327,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->patchJson("/api/v1/sub-tasks/{$this->subTask->uuid}/change-status");
+        $response = $this->patchJson("/api/v1/tasks/sub-tasks/{$this->subTask->uuid}");
 
         $response->assertStatus(403);
     }
@@ -336,7 +337,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->user);
 
-        $response = $this->deleteJson("/api/v1/sub-tasks/{$this->subTask->uuid}");
+        $response = $this->deleteJson("/api/v1/tasks/sub-tasks/{$this->subTask->uuid}");
 
         $response->assertStatus(200);
 
@@ -350,7 +351,7 @@ class TaskControllerTest extends TestCase
     {
         Sanctum::actingAs($this->anotherUser);
 
-        $response = $this->deleteJson("/api/v1/sub-tasks/{$this->subTask->uuid}");
+        $response = $this->deleteJson("/api/v1/tasks/sub-tasks/{$this->subTask->uuid}");
 
         $response->assertStatus(403);
 
