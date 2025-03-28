@@ -1,23 +1,32 @@
 <?php
 
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
-test('users can authenticate using the login screen', function () {
+test('users can authenticate using the login api', function () {
     $user = User::factory()->create();
 
-    $response = $this->post('/login', [
+    $response = $this->post('/api/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertNoContent();
+    $response->assertOk()
+        ->assertJsonStructure([
+            'message',
+            'user' => [
+                'name',
+                'email',
+            ],
+            'token',
+        ]);
 });
 
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $this->post('/login', [
+    $this->post('/api/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
@@ -27,9 +36,16 @@ test('users can not authenticate with invalid password', function () {
 
 test('users can logout', function () {
     $user = User::factory()->create();
+    $token = $user->createToken('test-token')->plainTextToken;
 
-    $response = $this->actingAs($user)->post('/logout');
+    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+        ->postJson('/api/logout');
 
-    $this->assertGuest();
     $response->assertNoContent();
+
+    $this->assertDatabaseMissing('personal_access_tokens', [
+        'tokenable_id' => $user->id,
+        'tokenable_type' => get_class($user),
+        'token' => hash('sha256', explode('|', $token)[1])
+    ]);
 });
