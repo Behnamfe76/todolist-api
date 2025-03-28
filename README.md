@@ -16,7 +16,7 @@ Clone the project repository to your local machine:
 
 ```bash
 git clone https://github.com/Behnamfe76/todolist-front
-cd todolist-front
+cd todolist-api
 ```
 
 ## Step 2: Install PHP Dependencies
